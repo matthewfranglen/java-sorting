@@ -3,39 +3,29 @@
  */
 package com.matthew.sorting;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 /**
  * @author matthew
  * 
  */
-public abstract class SorterTest extends TestCase {
-	/**
-	 * Create the test case
-	 * 
-	 * @param testName
-	 *            name of the test case
-	 */
-	public SorterTest(String testName) {
-		super(testName);
-	}
-
-	/**
-	 * @return the suite of tests being tested
-	 */
-	public static Test suite() {
-		return new TestSuite(BubbleSortTest.class);
-	}
+@RunWith(Suite.class)
+@SuiteClasses({ BubbleSortTest.class, QuickSort.class })
+public abstract class SorterTest {
 
 	protected abstract Sorter make();
 
+	@Test
 	public void testSort() {
 		final Sorter sorter = make();
 		final TestData<?>[] data = new TestData[] {

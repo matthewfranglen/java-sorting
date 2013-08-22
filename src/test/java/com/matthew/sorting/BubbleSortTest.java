@@ -3,18 +3,15 @@
  */
 package com.matthew.sorting;
 
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
+
 /**
  * @author matthew
  * 
  */
+@RunWith(JUnit4.class)
 public class BubbleSortTest extends SorterTest {
-
-	/**
-	 * @param testName
-	 */
-	public BubbleSortTest(String testName) {
-		super(testName);
-	}
 
 	/**
 	 * @return
