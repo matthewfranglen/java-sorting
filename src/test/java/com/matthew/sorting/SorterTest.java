@@ -20,7 +20,8 @@ import org.junit.runners.Suite.SuiteClasses;
  * 
  */
 @RunWith(Suite.class)
-@SuiteClasses({ BubbleSortTest.class, QuickSort.class })
+@SuiteClasses({ BubbleSortTest.class, QuickSortTest.Simple.class,
+		QuickSortTest.InPlace.class })
 public abstract class SorterTest {
 
 	protected abstract Sorter make();
@@ -33,8 +34,10 @@ public abstract class SorterTest {
 				new TestData<String>("apple", "cherry", "banana"),
 				new TestData<Double>(1.0, 2.0, 2.5, 3.5) };
 
-		for (TestData<?> test : data) {
-			assertEquals(test.sorted(), test.random(sorter));
+		for (int i = 0; i < 100; i++) {
+			for (TestData<?> test : data) {
+				assertEquals(test.sorted(), test.random(sorter));
+			}
 		}
 	}
 }
