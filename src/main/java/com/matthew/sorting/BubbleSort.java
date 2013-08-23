@@ -6,6 +6,10 @@ package com.matthew.sorting;
 import java.util.Comparator;
 
 /**
+ * The bubble sort iterates through the list comparing each element with a
+ * neighbour. If the pair is out of order, then they are swapped. The iterations
+ * are repeated until no more swaps occur.
+ * 
  * @author matthew
  * 
  */

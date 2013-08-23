@@ -12,7 +12,8 @@ import java.util.Comparator;
 public abstract class Sorter {
 
 	/**
-	 * Sort the provided array using the results of the comparator.
+	 * Sort the provided array using the results of the comparator. The provided
+	 * array may be modified as part of this operation.
 	 * 
 	 * @param array
 	 * @param comparator
