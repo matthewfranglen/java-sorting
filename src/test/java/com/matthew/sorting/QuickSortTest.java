@@ -10,16 +10,30 @@ import org.junit.runners.JUnit4;
  * @author matthew
  * 
  */
-@RunWith(JUnit4.class)
-public class QuickSortTest extends SorterTest {
+public class QuickSortTest {
 
-	/**
-	 * @return
-	 * @see com.matthew.sorting.SorterTest#make()
-	 */
-	@Override
-	protected Sorter make() {
-		return new QuickSort();
+	@RunWith(JUnit4.class)
+	public static class Simple extends SorterTest {
+		/**
+		 * @return
+		 * @see com.matthew.sorting.SorterTest#make()
+		 */
+		@Override
+		protected Sorter make() {
+			return QuickSort.simple();
+		}
+	}
+
+	@RunWith(JUnit4.class)
+	public static class InPlace extends SorterTest {
+		/**
+		 * @return
+		 * @see com.matthew.sorting.SorterTest#make()
+		 */
+		@Override
+		protected Sorter make() {
+			return QuickSort.inPlace();
+		}
 	}
 
 }

@@ -19,25 +19,84 @@ import java.util.List;
  */
 public class QuickSort extends Sorter {
 
-	private final PivotSelector chooser;
+	private final Recurser recurser;
 
-	public QuickSort() {
-		chooser = new DefaultPivotSelector();
+	private QuickSort(Recurser recurser) {
+		this.recurser = recurser;
 	}
 
+	public static QuickSort simple() {
+		return new QuickSort(new SimpleRecurser(new DefaultPivotSelector()));
+	}
+
+	public static QuickSort inPlace() {
+		return new QuickSort(new InPlaceRecurser(new DefaultPivotSelector()));
+	}
+
+	/**
+	 * @param array
+	 * @param comparator
+	 * @return
+	 * @see com.matthew.sorting.Sorter#sort(java.lang.Object[],
+	 *      java.util.Comparator)
+	 */
+	@Override
+	public <T> T[] sort(T[] array, Comparator<T> comparator) {
+		this.recurser.recurse(array, 0, array.length, comparator);
+
+		return array;
+	}
+}
+
+/**
+ * The method that implements quick sort has been split into a class because
+ * there are two separate implementations available.
+ * 
+ * @author matthew
+ * 
+ */
+abstract class Recurser {
+	protected final PivotSelector chooser;
+
+	public Recurser(PivotSelector chooser) {
+		this.chooser = chooser;
+	}
+
+	public abstract <T> void recurse(T[] array, int start, int length,
+			Comparator<T> comparator);
+}
+
+/**
+ * The SimpleRecurser just creates new arrays to handle the three separate lists
+ * that need to be handled. This uses more memory but has simpler code.
+ * 
+ * @author matthew
+ * 
+ */
+class SimpleRecurser extends Recurser {
+
+	/**
+	 * @param chooser
+	 */
+	public SimpleRecurser(PivotSelector chooser) {
+		super(chooser);
+	}
+
+	@Override
 	@SuppressWarnings("unchecked")
 	// The unchecked warning comes from the inability to create an array of the
 	// generic T type. The type cannot be determined at compile time and as such
 	// the array cannot be created.
-	private <T> T[] recurse(T[] array, Comparator<T> comparator) {
+	public <T> void recurse(T[] array, int start, int length,
+			Comparator<T> comparator) {
 		final int pivot;
 		final T[] above, equal, below;
 
 		if (array.length < 2) {
-			return array;
+			return;
 		}
 
-		pivot = chooser.choose(array, 0, array.length);
+		pivot = this.chooser.choose(array, 0, array.length);
 		{
 			final List<T> a, e, b;
 
@@ -68,23 +127,41 @@ public class QuickSort extends Sorter {
 			below = (T[]) b.toArray();
 		}
 
-		System.arraycopy(this.recurse(below, comparator), 0, array, 0,
-				below.length);
-		System.arraycopy(equal, 0, array, below.length, equal.length);
-		System.arraycopy(this.recurse(above, comparator), 0, array,
-				below.length + equal.length, above.length);
+		this.recurse(below, 0, below.length, comparator);
+		this.recurse(above, 0, above.length, comparator);
 
-		return array;
+		System.arraycopy(below, 0, array, 0, below.length);
+		System.arraycopy(equal, 0, array, below.length, equal.length);
+		System.arraycopy(above, 0, array, below.length + equal.length,
+				above.length);
+	}
+}
+
+/**
+ * The InPlaceRecurser uses swaps to update the original array in place. This
+ * does not duplicate the array at all, leading to a constant memory use cost
+ * (there are variables related to the algorithm).
+ * 
+ * @author matthew
+ * 
+ */
+class InPlaceRecurser extends Recurser {
+
+	/**
+	 * @param chooser
+	 */
+	public InPlaceRecurser(PivotSelector chooser) {
+		super(chooser);
 	}
 
-	private <T> T[] recurseInPlace(T[] array, int start, int length,
+	@Override
+	public <T> void recurse(T[] array, int start, int length,
 			Comparator<T> comparator) {
-		// This records the section of the array that is equal to the pivot.
 		T pivot;
 		int equalStart, equalEnd;
 
 		if (length < 2) {
-			return array;
+			return;
 		}
 
 		// Move the pivot to the start of the array.
@@ -115,7 +192,8 @@ public class QuickSort extends Sorter {
 				equalStart++;
 				equalEnd++;
 			} else if (comparison == 0) {
-				// Pivot equal, swap with current end point of equal block.
+				// Pivot equal. Swap end with first unevaluated value after
+				// equal block to expand the equal block.
 				T copy = array[equalEnd];
 				array[equalEnd] = array[end];
 				array[end] = copy;
@@ -130,29 +208,11 @@ public class QuickSort extends Sorter {
 		// equalStart indicates the first value that is equal to the pivot. That
 		// index should not move, as everything before it is less than the
 		// pivot.
-		this.recurseInPlace(array, start, equalStart - start, comparator);
+		this.recurse(array, start, equalStart - start, comparator);
 
 		// equalEnd indicates the first value that is greater than the pivot.
 		// That index is the start of the values that are higher than the pivot.
-		this.recurseInPlace(array, equalEnd, start + length - equalEnd,
-				comparator);
-
-		return array;
-	}
-
-	/**
-	 * @param array
-	 * @param comparator
-	 * @return
-	 * @see com.matthew.sorting.Sorter#sort(java.lang.Object[],
-	 *      java.util.Comparator)
-	 */
-	@Override
-	public <T> T[] sort(T[] array, Comparator<T> comparator) {
-		// this.recurse(array, comparator);
-		this.recurseInPlace(array, 0, array.length, comparator);
-
-		return array;
+		this.recurse(array, equalEnd, start + length - equalEnd, comparator);
 	}
 }
 

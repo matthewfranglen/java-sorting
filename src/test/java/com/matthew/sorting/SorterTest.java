@@ -20,7 +20,8 @@ import org.junit.runners.Suite.SuiteClasses;
  * 
  */
 @RunWith(Suite.class)
-@SuiteClasses({ BubbleSortTest.class, QuickSort.class })
+@SuiteClasses({ BubbleSortTest.class, QuickSortTest.Simple.class,
+		QuickSortTest.InPlace.class })
 public abstract class SorterTest {
 
 	protected abstract Sorter make();
