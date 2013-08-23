@@ -37,7 +37,7 @@ public class QuickSort extends Sorter {
 			return array;
 		}
 
-		pivot = chooser.choose(array);
+		pivot = chooser.choose(array, 0, array.length);
 		{
 			final List<T> a, e, b;
 
@@ -77,6 +77,69 @@ public class QuickSort extends Sorter {
 		return array;
 	}
 
+	private <T> T[] recurseInPlace(T[] array, int start, int length,
+			Comparator<T> comparator) {
+		// This records the section of the array that is equal to the pivot.
+		T pivot;
+		int equalStart, equalEnd;
+
+		if (length < 2) {
+			return array;
+		}
+
+		// Move the pivot to the start of the array.
+		{
+			int p = chooser.choose(array, start, length);
+			pivot = array[p];
+			if (p != start) {
+				array[p] = array[start];
+				array[start] = pivot;
+			}
+		}
+
+		// Sort the values into three lists by maintaining a block of equal
+		// values in the start/middle and shifting it as the values are
+		// evaluated.
+		equalEnd = start + 1;
+		equalStart = start;
+		for (int end = start + length - 1; equalEnd <= end;) {
+			int comparison = comparator.compare(pivot, array[end]);
+
+			if (comparison > 0) {
+				// Pivot greater than end of array. Need to shift the equal
+				// block one over and move the end to the new space.
+				T copy = array[equalStart];
+				array[equalStart] = array[end];
+				array[end] = array[equalEnd];
+				array[equalEnd] = copy;
+				equalStart++;
+				equalEnd++;
+			} else if (comparison == 0) {
+				// Pivot equal, swap with current end point of equal block.
+				T copy = array[equalEnd];
+				array[equalEnd] = array[end];
+				array[end] = copy;
+				equalEnd++;
+			} else {
+				// End of array greater than pivot, already in right place but
+				// need to consider the next position down next time.
+				end--;
+			}
+		}
+
+		// equalStart indicates the first value that is equal to the pivot. That
+		// index should not move, as everything before it is less than the
+		// pivot.
+		this.recurseInPlace(array, start, equalStart - start, comparator);
+
+		// equalEnd indicates the first value that is greater than the pivot.
+		// That index is the start of the values that are higher than the pivot.
+		this.recurseInPlace(array, equalEnd, start + length - equalEnd,
+				comparator);
+
+		return array;
+	}
+
 	/**
 	 * @param array
 	 * @param comparator
@@ -86,7 +149,8 @@ public class QuickSort extends Sorter {
 	 */
 	@Override
 	public <T> T[] sort(T[] array, Comparator<T> comparator) {
-		this.recurse(array, comparator);
+		// this.recurse(array, comparator);
+		this.recurseInPlace(array, 0, array.length, comparator);
 
 		return array;
 	}
@@ -106,7 +170,7 @@ interface PivotSelector {
 	 * @param array
 	 * @return
 	 */
-	public <T> int choose(T[] array);
+	public <T> int choose(T[] array, int start, int length);
 }
 
 /**
@@ -124,8 +188,8 @@ class DefaultPivotSelector implements PivotSelector {
 	 * @return
 	 * @see com.matthew.sorting.PivotSelector#choose(java.lang.Object[])
 	 */
-	public <T> int choose(T[] array) {
-		return array.length / 2;
+	public <T> int choose(T[] array, int start, int length) {
+		return start + (length / 2);
 	}
 }
 
@@ -144,7 +208,7 @@ class BadPivotSelector implements PivotSelector {
 	 * @return
 	 * @see com.matthew.sorting.PivotSelector#choose(java.lang.Object[])
 	 */
-	public <T> int choose(T[] array) {
-		return 0;
+	public <T> int choose(T[] array, int start, int length) {
+		return start;
 	}
 }
