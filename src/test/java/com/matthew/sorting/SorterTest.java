@@ -33,8 +33,10 @@ public abstract class SorterTest {
 				new TestData<String>("apple", "cherry", "banana"),
 				new TestData<Double>(1.0, 2.0, 2.5, 3.5) };
 
-		for (TestData<?> test : data) {
-			assertEquals(test.sorted(), test.random(sorter));
+		for (int i = 0; i < 100; i++) {
+			for (TestData<?> test : data) {
+				assertEquals(test.sorted(), test.random(sorter));
+			}
 		}
 	}
 }
