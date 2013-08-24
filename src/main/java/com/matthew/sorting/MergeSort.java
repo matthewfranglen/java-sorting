@@ -48,6 +48,13 @@ public class MergeSort extends Sorter {
 	}
 }
 
+/**
+ * Since there are two different implementations of merge sort, the actual
+ * implementation code needs to be encapsulated.
+ * 
+ * @author matthew
+ * 
+ */
 abstract class Implementation {
 	public abstract <T> List<T> sort(List<T> array, Comparator<T> comparator);
 
@@ -80,6 +87,14 @@ abstract class Implementation {
 	}
 }
 
+/**
+ * This performs the recursive process of splitting the list, sorting the split
+ * lists, and then merging the split lists. The recursion ends when a list with
+ * a single element is reached, as that is already sorted.
+ * 
+ * @author matthew
+ * 
+ */
 class TopDownImplementation extends Implementation {
 
 	/**
@@ -106,6 +121,15 @@ class TopDownImplementation extends Implementation {
 	}
 }
 
+/**
+ * This performs the bottom up process of splitting the list into a list of
+ * lists containing the smallest parts and then iteratively merging consecutive
+ * lists of the current list to form bigger lists of a new list, repeating until
+ * there is only a single list in the list. (terrible English)
+ * 
+ * @author matthew
+ * 
+ */
 class BottomUpImplementation extends Implementation {
 
 	/**
@@ -116,6 +140,9 @@ class BottomUpImplementation extends Implementation {
 	 *      java.util.Comparator)
 	 */
 	@Override
+	@SuppressWarnings("unchecked")
+	// Passing in a single manual argument to a varargs constructor turns it
+	// into a generic array, which gets a warning.
 	public <T> List<T> sort(List<T> array, Comparator<T> comparator) {
 		List<List<T>> one, two;
 
